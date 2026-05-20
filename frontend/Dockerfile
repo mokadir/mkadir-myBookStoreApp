@@ -28,12 +28,12 @@ COPY --from=build /app/build /usr/share/nginx/html
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
     chmod -R 755 /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 80
+# Expose port 8080 (non-privileged for non-root nginx)
+EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/ || exit 1
 
 # Run nginx in foreground
 CMD ["nginx", "-g", "daemon off;"]
