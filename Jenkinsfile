@@ -187,7 +187,7 @@ EOF
                         def tarPath = "${env.WORKSPACE}/${svc}-${env.IMAGE_TAG}.tar"
 
                         try {
-                            def kanikoCommand = "/kaniko/executor --context ${env.WORKSPACE}/${svc} --dockerfile ${env.WORKSPACE}/${svc}/Dockerfile --destination ${imageName}"
+                            def kanikoCommand = "/kaniko/executor --context ${env.WORKSPACE}/${svc} --dockerfile Dockerfile --destination ${imageName}"
                             if (params.PUSH_IMAGE) {
                                 kanikoCommand += " --destination ${latestTag}"
                             }
