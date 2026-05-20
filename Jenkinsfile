@@ -132,8 +132,9 @@ spec:
                 container('trivy') {
                     script {
                         resolveServices(params.SERVICES).each { svc ->
+                            def svcDir = serviceDir(svc)
                             def lockFiles = sh(
-                                script: "find ${svc} -name 'package-lock.json' 2>/dev/null || true",
+                                script: "find ${svcDir} -name 'package-lock.json' 2>/dev/null || true",
                                 returnStdout: true
                             ).trim()
                             if (lockFiles) {
@@ -143,7 +144,7 @@ spec:
                                         --severity ${env.TRIVY_SEVERITY} \
                                         --format table \
                                         --output trivy-sca-${svc}.txt \
-                                        ${svc} || true
+                                        ${svcDir} || true
                                 """
                                 archiveArtifacts artifacts: "trivy-sca-${svc}.txt", allowEmptyArchive: true
                             }
@@ -182,12 +183,13 @@ EOF
                 script {
                     def failedBuilds = []
                     resolveServices(params.SERVICES).each { svc ->
+                        def svcDir = serviceDir(svc)
                         def imageName = "${env.DOCKERHUB_ORG}/${svc}:${env.IMAGE_TAG}"
                         def latestTag = "${env.DOCKERHUB_ORG}/${svc}:latest"
                         def tarPath = "${env.WORKSPACE}/${svc}-${env.IMAGE_TAG}.tar"
 
                         try {
-                            def kanikoCommand = "/kaniko/executor --context ${env.WORKSPACE}/${svc} --dockerfile Dockerfile --destination ${imageName}"
+                            def kanikoCommand = "/kaniko/executor --context ${env.WORKSPACE}/${svcDir} --dockerfile Dockerfile --destination ${imageName}"
                             if (params.PUSH_IMAGE) {
                                 kanikoCommand += " --destination ${latestTag}"
                             }
@@ -303,4 +305,13 @@ def resolveServices(String param) {
         error("Unknown service(s): ${invalid.join(', ')}. Valid: ${allServices.join(', ')}")
     }
     return requested
+}
+
+// Map display service names to actual filesystem directory names
+def serviceDir(String svc) {
+    def dirs = [
+        'bookstore-backend': 'backend',
+        'bookstore-frontend': 'frontend'
+    ]
+    return dirs[svc] ?: error("Unknown directory mapping for service: ${svc}")
 }
