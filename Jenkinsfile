@@ -189,7 +189,8 @@ EOF
                         def tarPath = "${env.WORKSPACE}/${svc}-${env.IMAGE_TAG}.tar"
 
                         try {
-                            def kanikoCommand = "/kaniko/executor --context ${env.WORKSPACE}/${svcDir} --dockerfile Dockerfile --destination ${imageName}"
+                            def kanikoContext = "${env.WORKSPACE}/${svcDir}"
+                            def kanikoCommand = "/kaniko/executor --context . --dockerfile Dockerfile --destination ${imageName}"
                             if (params.PUSH_IMAGE) {
                                 kanikoCommand += " --destination ${latestTag}"
                             }
@@ -205,6 +206,10 @@ EOF
                                 sh """
                                     set -eux
                                     export GODEBUG=http2client=0
+                                    # Change to service directory so relative paths work in Kaniko
+                                    cd "${kanikoContext}"
+                                    pwd
+                                    ls -la Dockerfile
                                     retry_count=0
                                     until [ "\$retry_count" -ge 3 ]; do
                                         echo "Running Kaniko push attempt \$((retry_count + 1))"
