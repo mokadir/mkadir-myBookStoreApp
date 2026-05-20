@@ -1,6 +1,24 @@
 # =============================================================================
 # bookstore-mongodb — MongoDB 7 | Port 27017
 # =============================================================================
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: bookstore-mongodb-pv
+  namespace: ns-bookstoreapp
+  labels:
+    app: bookstore-mongodb
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/bookstore-mongodb"
+  persistentVolumeReclaimPolicy: Retain
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -70,6 +88,7 @@ metadata:
     app: bookstore-mongodb
     app.kubernetes.io/part-of: bookstoreapp
 spec:
+  storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
