@@ -69,7 +69,7 @@ spec:
                 checkout([
                     $class: 'GitSCM',
                     branches: [[name: "*/${params.GIT_BRANCH}"]],
-                    extensions: [[$class: 'CleanBeforeCheckout']],
+                    extensions: [[$class: 'CleanBeforeCheckout'], [$class: 'SubmoduleOption', parentCredentials: true, recursiveSubmodules: true]],
                     userRemoteConfigs: scm.userRemoteConfigs
                 ])
             }
