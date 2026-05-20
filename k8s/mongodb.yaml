@@ -19,6 +19,22 @@ spec:
     path: "/data/bookstore-mongodb"
   persistentVolumeReclaimPolicy: Retain
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bookstore-mongodb-pvc
+  namespace: ns-bookstoreapp
+  labels:
+    app: bookstore-mongodb
+    app.kubernetes.io/part-of: bookstoreapp
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -44,6 +60,16 @@ spec:
           ports:
             - containerPort: 27017
           env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: bookstoreapp-secrets
+                  key: mongo-root-username
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bookstoreapp-secrets
+                  key: mongo-root-password
             - name: MONGO_INITDB_DATABASE
               value: bookstore
           resources:
@@ -52,25 +78,41 @@ spec:
               memory: "256Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "1Gi"
           livenessProbe:
             exec:
               command:
                 - mongosh
                 - --quiet
+                - -u
+                - "$MONGO_INITDB_ROOT_USERNAME"
+                - -p
+                - "$MONGO_INITDB_ROOT_PASSWORD"
+                - --authenticationDatabase
+                - admin
                 - --eval
                 - "db.adminCommand('ping')"
-            initialDelaySeconds: 20
-            periodSeconds: 15
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
           readinessProbe:
             exec:
               command:
                 - mongosh
                 - --quiet
+                - -u
+                - "$MONGO_INITDB_ROOT_USERNAME"
+                - -p
+                - "$MONGO_INITDB_ROOT_PASSWORD"
+                - --authenticationDatabase
+                - admin
                 - --eval
                 - "db.adminCommand('ping')"
-            initialDelaySeconds: 10
-            periodSeconds: 10
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 5
           volumeMounts:
             - name: mongodb-data
               mountPath: /data/db
@@ -78,22 +120,6 @@ spec:
         - name: mongodb-data
           persistentVolumeClaim:
             claimName: bookstore-mongodb-pvc
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: bookstore-mongodb-pvc
-  namespace: ns-bookstoreapp
-  labels:
-    app: bookstore-mongodb
-    app.kubernetes.io/part-of: bookstoreapp
-spec:
-  storageClassName: manual
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
 ---
 apiVersion: v1
 kind: Service

@@ -30,7 +30,7 @@ spec:
         fsGroup: 1001
       containers:
         - name: bookstore-backend
-          image: mokadir/bookstore-backend:8
+          image: mokadir/bookstore-backend:9
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
@@ -40,7 +40,17 @@ spec:
             - name: PORT
               value: "5000"
             - name: MONGODB_URI
-              value: "mongodb://bookstore-mongodb:27017/bookstore"
+              value: "mongodb://bookstore-mongodb:27017/bookstore?authSource=admin"
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: bookstoreapp-secrets
+                  key: mongo-root-username
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bookstoreapp-secrets
+                  key: mongo-root-password
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
