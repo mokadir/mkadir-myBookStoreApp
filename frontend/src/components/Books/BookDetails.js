@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import LoadingSpinner from '../common/LoadingSpinner';
 import Message from '../common/Message';
+import BookImage from '../common/BookImage';
 import { FaStar, FaStarHalfAlt, FaRegStar, FaShoppingCart, FaArrowLeft, FaInfoCircle, FaCheckCircle } from 'react-icons/fa';
 
 const BookDetails = () => {
@@ -63,10 +64,9 @@ const BookDetails = () => {
 
       <div className="book-details">
         <div className="book-details-image">
-          <img
-            src={book.coverImage || '/images/default-book.jpg'}
+          <BookImage
+            src={book.coverImage}
             alt={book.title}
-            onError={(e) => { e.target.src = 'https://via.placeholder.com/400x600?text=No+Cover'; }}
           />
           {book.isFeatured && <span className="featured-badge">Featured</span>}
         </div>

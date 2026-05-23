@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import orderApi from '../../api/orderApi';
 import LoadingSpinner from '../common/LoadingSpinner';
 import Message from '../common/Message';
+import BookImage from '../common/BookImage';
 import { FaArrowLeft, FaTruck, FaCreditCard, FaCheckCircle, FaTimesCircle, FaBox } from 'react-icons/fa';
 
 const OrderDetails = () => {
@@ -74,8 +75,7 @@ const OrderDetails = () => {
           <div className="order-items-list">
             {order.orderItems?.map((item, index) => (
               <div key={index} className="order-item">
-                <img src={item.coverImage || '/placeholder.jpg'} alt={item.title}
-                  onError={(e) => { e.target.src = 'https://via.placeholder.com/60x80?text=No+Cover'; }} />
+                <BookImage src={item.coverImage} alt={item.title} />
                 <div className="order-item-info">
                   <Link to={`/books/${item.book}`}>{item.title}</Link>
                   <p>by {item.author}</p>

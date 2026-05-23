@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FaStar, FaStarHalfAlt, FaRegStar, FaShoppingCart } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import BookImage from '../common/BookImage';
 
 const BookCard = ({ book }) => {
   const { isAuthenticated } = useAuth();
@@ -39,12 +40,9 @@ const BookCard = ({ book }) => {
   return (
     <Link to={`/books/${book._id}`} className="book-card">
       <div className="book-card-image">
-        <img
-          src={book.coverImage || '/images/default-book.jpg'}
+        <BookImage
+          src={book.coverImage}
           alt={book.title}
-          onError={(e) => {
-            e.target.src = 'https://via.placeholder.com/200x300?text=No+Cover';
-          }}
         />
         {book.stockQuantity <= 5 && book.stockQuantity > 0 && (
           <span className="stock-badge low-stock">Only {book.stockQuantity} left</span>

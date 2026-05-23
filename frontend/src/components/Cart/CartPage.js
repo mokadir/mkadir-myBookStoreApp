@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import LoadingSpinner from '../common/LoadingSpinner';
 import Message from '../common/Message';
+import BookImage from '../common/BookImage';
 import { FaTrash, FaShoppingBag, FaArrowLeft, FaMinus, FaPlus } from 'react-icons/fa';
 
 const CartPage = () => {
@@ -48,10 +49,9 @@ const CartPage = () => {
             {items.map((item) => (
               <div key={item._id} className="cart-item">
                 <div className="cart-item-image">
-                  <img
-                    src={item.coverImage || '/placeholder.jpg'}
+                  <BookImage
+                    src={item.coverImage}
                     alt={item.title}
-                    onError={(e) => { e.target.src = 'https://via.placeholder.com/80x120?text=No+Cover'; }}
                   />
                 </div>
 

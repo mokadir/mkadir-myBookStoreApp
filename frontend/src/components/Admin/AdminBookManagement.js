@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import adminApi from '../../api/adminApi';
 import LoadingSpinner from '../common/LoadingSpinner';
 import Message from '../common/Message';
+import BookImage from '../common/BookImage';
 import { FaPlus, FaEdit, FaTrash, FaBook } from 'react-icons/fa';
 
 const AdminBookManagement = () => {
@@ -137,8 +138,7 @@ const AdminBookManagement = () => {
           <tbody>
             {books.map((book) => (
               <tr key={book._id}>
-                <td><img src={book.coverImage || '/placeholder.jpg'} alt="" className="table-thumb"
-                  onError={(e) => { e.target.src = 'https://via.placeholder.com/40x60?text=No'; }} /></td>
+                <td><BookImage src={book.coverImage} alt={book.title} className="table-thumb" /></td>
                 <td>{book.title}</td><td>{book.author}</td><td>{book.category}</td>
                 <td>${book.price?.toFixed(2)}</td>
                 <td><span className={`stock-count ${book.stockQuantity <= 5 ? 'low' : ''}`}>{book.stockQuantity}</span></td>

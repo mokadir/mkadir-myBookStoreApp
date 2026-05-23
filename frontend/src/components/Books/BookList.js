@@ -63,7 +63,8 @@ const BookList = () => {
 
   useEffect(() => {
     fetchBooks();
-  }, [filters.category, filters.sort]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.category, filters.sort, filters.search, filters.minPrice, filters.maxPrice, filters.minRating]);
 
   const handleSearch = (e) => {
     e.preventDefault();

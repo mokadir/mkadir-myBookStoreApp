@@ -30,7 +30,7 @@ spec:
         fsGroup: 1001
       containers:
         - name: bookstore-backend
-          image: mokadir/bookstore-backend:13
+          image: mokadir/bookstore-backend:14
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
