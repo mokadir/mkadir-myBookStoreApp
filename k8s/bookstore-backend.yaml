@@ -30,7 +30,7 @@ spec:
         fsGroup: 1001
       containers:
         - name: bookstore-backend
-          image: mokadir/bookstore-backend:11
+          image: mokadir/bookstore-backend:12
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
@@ -54,7 +54,7 @@ spec:
                   name: bookstoreapp-secrets
                   key: stripe-secret-key
             - name: FRONTEND_URL
-              value: "http://bookstore-frontend:3000"
+              value: "http://bookstore-frontend:8080"
           resources:
             requests:
               cpu: "100m"

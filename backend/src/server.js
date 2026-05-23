@@ -17,9 +17,37 @@ const app = express();
 // ========================
 
 // CORS - allow frontend to access API
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost:3000',
+  'http://localhost:3000',
+  'http://localhost:30022',
+  'http://localhost:8080',
+  /^http:\/\/192\.168\.\d{1,3}\.\d{1,3}:30022$/,
+  /^http:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:30022$/,
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: function (origin, callback) {
+      // Allow requests with no origin (mobile apps, Postman, curl, etc.)
+      if (!origin) return callback(null, true);
+      
+      // Check if origin matches allowed origins
+      const isAllowed = allowedOrigins.some(allowedOrigin => {
+        if (typeof allowedOrigin === 'string') {
+          return origin === allowedOrigin;
+        }
+        // For regex patterns
+        return allowedOrigin.test(origin);
+      });
+      
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        console.warn(`CORS: Blocked origin ${origin}`);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );
